@@ -1,3 +1,5 @@
+#A Crude Attempt at creating the Simulation on one file.
+
 import numpy as np
 import matplotlib.pyplot as plt
 
