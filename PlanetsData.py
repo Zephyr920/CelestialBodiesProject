@@ -8,8 +8,11 @@ def load_data(filename):
             data_list.append(row)
         xpos = [row['xpos'] for row in data_list]
         ypos = [row['ypos'] for row in data_list]
+        xvel = [row['xvel'] for row in data_list]
+        yvel = [row['yvel'] for row in data_list]
+        mass = [row['mass'] for row in data_list]
         radius = [row['radius'] for row in data_list]
-        return data_list, xpos, ypos, radius
+        return data_list, xpos, ypos, xvel, yvel, mass, radius
 
 
 
