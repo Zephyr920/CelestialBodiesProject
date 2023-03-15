@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import Planet as p
 import PlanetsData as psd
-import PlanetaryMotionVerletMethod as pm
+#import PlanetaryMotionVerletMethod as pm
 
 data_list, xpos, ypos, xvel, yvel, mass, radius = psd.load_data('PlanetData.csv')
 
@@ -31,8 +31,6 @@ for i in range(len(visualize_planets_names)):
 
 planet = p.Planet(150, 0, 5, 10, 100, 5)
 planet2 = p.Planet(0, 0, 0, 0, 500, 10)
-planetary_system = pm.PlanetaryMotion([planet, planet2])
-
 
 plt.figure(figsize=(6, 6))
 plt.axis([-500, 500, -500, 500])
@@ -42,19 +40,14 @@ plt.xlabel('Displacement')
 plt.ylabel('Displacement')
 plt.gca().set_aspect('equal', adjustable='box')
 
+planet.spawn_moons(3)
 planet.show_planet()
 planet2.show_planet()
-
-plt.legend()
-
-dt = 100
-num_steps = 1000
-for i in range(num_steps):
-    planetary_system.update(dt)
 
 #for j in range(len(visualize_planets_names)):
 #    visualize_planets_names[j].show_planet()
 
+plt.legend()
 plt.show()
 
 
