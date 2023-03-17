@@ -7,7 +7,7 @@ import PlanetsData as psd
 
 data_list, xpos, ypos, xvel, yvel, mass, radius = psd.load_data('PlanetData.csv')
 
-#Creates 10 objects for each 'planet' from Sun to Pluto
+#Creates 10 objects for each 'planet' from Sun to Pluto. To be used for that actual calculations
 for i, row in enumerate(data_list):
     var_name = f'planet_{i}'
     locals()[var_name] = p.Planet(float(xpos[i]), float(ypos[i]), float(xvel[i]), float(yvel[i]), float(mass[i]), float(radius[i])) #Yes I know! Do I care? Nope!
@@ -27,7 +27,7 @@ for i, row in enumerate(data_list):
 #visualize_planets_moons = [0, 0, 1, 2, 9, 8, 6, 5, 3]
 
 
-#Bad Practice but archived for future use.
+#Bad Practice but archived for potential future use?
 #for i in range(len(visualize_planets_names)):
 #    visualize_planets_names[i] = p.Planet(visualize_planets_xpos[i], visualize_planets_ypos[i], visualize_planets_xvel[i], visualize_planets_yvel[i], visualize_planets_mass[i], visualize_planets_radius[i])
 
