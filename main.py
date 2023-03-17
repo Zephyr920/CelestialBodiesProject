@@ -38,10 +38,11 @@ visual_sun = p.Planet(0, 0, 0, 0, 500, 10)
 visual_mercury = p.Planet(150, 0, 5, 10, 100, 5)
 visual_venus = p.Planet(250, 0, 10, 15, 110, 6)
 visual_earth = p.Planet(300, 125, 20, 25, 140, 8)
-visual_moon_array = [0, 2, 1]
+visual_mars = p.Planet(-350, -150, 20, 20, 145, 8.5)
+visual_moon_array = [0, 0, 1, 1]
 
 #Complete Planet Visualization Array
-visual_planets_array = [visual_mercury, visual_venus, visual_earth]
+visual_planets_array = [visual_mercury, visual_venus, visual_earth, visual_mars]
 
 plt.figure(figsize=(6, 6))
 plt.axis([-1000, 1000, -1000, 1000])
@@ -52,7 +53,7 @@ plt.ylabel('Displacement')
 plt.gca().set_aspect('equal', adjustable='box')
 
 for n in range(len(visual_planets_array)):
-    visual_planets_array[n].spawn_moons(n, visual_planets_array[n])
+    visual_planets_array[n].spawn_moons(visual_moon_array[n], visual_planets_array[n])
     visual_planets_array[n].show_planet()
 
 

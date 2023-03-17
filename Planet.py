@@ -26,8 +26,8 @@ class Planet:
         for i in range(total):
             r = self.radius * 0.5
             #d = np.random.uniform(100, 200)
-            xpos = np.random.randint(-100, 200)
-            ypos = np.random.randint(-100, 200)
+            xpos = np.random.randint(-100, 100)
+            ypos = np.random.randint(-100, 100)
             #xpos = 0
             #ypos = np.random.randint(-100, 100)
             self.planets.append(Planet(other.xpos+xpos, other.ypos+ypos, 0, 0, 0, r)) #Need to add that it's xpos and ypos from the planet
