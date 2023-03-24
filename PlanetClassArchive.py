@@ -208,3 +208,12 @@ def update_position(self, planets):
     #        self.yvel += ay * dt
     #        self.xpos += self.xvel * dt
     #        self.ypos += self.yvel * dt
+
+#About to get this bit to work
+#    def simulate(self):
+#        celestial_body = plt.Circle((self.xpos, self.ypos), self.radius, color='white', fill=True, label='Planet')
+#        plt.gca().add_artist(celestial_body)
+#        plt.pause(0.0001)
+#        plt.show()
+#        plt.clf()
+#Imma bout to need this real soon homie
