@@ -56,11 +56,17 @@ plt.xlabel('Displacement')
 plt.ylabel('Displacement')
 plt.gca().set_aspect('equal', adjustable='box')
 
-visual_sun.show_sun()
-for n in range(len(visual_planets_array)):
-    visual_planets_array[n].spawn_moons(visual_moon_array[n], visual_planets_array[n])
-    visual_planets_array[n].show_planet()
-    print(visual_planets_array[n].update_planets(dt))
+#visual_sun.show_sun()
+#visual_earth.show_planet()
+print(planet_3.xpos)
+planet_3.update_planet_position(planet_0)
+print(planet_3.xpos) #Debugging purposes stop the bulli pls okay thank you
+
+#for n in range(len(visual_planets_array)):
+#    visual_planets_array[n].spawn_moons(visual_moon_array[n], visual_planets_array[n])
+#    visual_planets_array[n].show_planet()
+#    visual_planets_array[n].update_planets(dt)
+#    print(visual_planets_array[n].xpos)
 
 
 #Using Dynamic Variable Naming, Bad Practice
@@ -83,5 +89,5 @@ for n in range(len(visual_planets_array)):
     #plt.pause(0.01)
 
 
-plt.legend()
+#plt.legend()
 plt.show()
