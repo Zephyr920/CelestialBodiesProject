@@ -41,4 +41,4 @@ https://gereshes.com/2018/07/09/verlet-integration-the-n-body-problem/ - Compare
 
 # Acknowledgments
 
-The Celestial Bodies Project was created by a team consisting of [members].
+The Celestial Bodies Project was created by a team consisting of Alex Stancioiu, Hubert Radecki, Michael Ravenscroft, Oliver Rubia Alcarria and Agustin Montemurro.
