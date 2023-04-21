@@ -9,8 +9,9 @@ class Planet:
     G = 6.6743e-11
     DT = 60
     TIMESTEP = 3600 * 24 * 365
-    def __init__(self, name, xpos, ypos, xvel, yvel, mass, r, colour):
-        self.name = name
+    SCALE = 250 / AU
+    def __init__(self, xpos, ypos, xvel, yvel, mass, r):
+        #self.name = name
         self.xpos = xpos
         self.ypos = ypos
         self.xvel = xvel
@@ -18,44 +19,34 @@ class Planet:
         self.mass = mass
         self.radius = r
         self.planets = []
-        self.colour = colour
+        #self.colour = colour
 
     def show_properties(self):
-        return self.xpos, self.ypos, self.xvel, self.yvel, self.mass, self.radius, self.angle
+        return self.xpos, self.ypos, self.xvel, self.yvel, self.mass, self.radius
 
-    def update_planet_position(self, other):
+    def update_planet_position(self, other_planets):
 
-        print("Initial xpos", self.xpos)
-        xdist = self.xpos - other.xpos
-        ydist = self.ypos - other.ypos
-        dist = np.sqrt(xdist**2 + ydist**2)
-        angle = np.arctan2(ydist, xdist) #radians
-        print(dist)
-        print("angle ", angle)
+        for other in other_planets:
+            if other is not self:
+                xdist = self.xpos - other.xpos
+                ydist = self.ypos - other.ypos
+                dist = np.sqrt(xdist**2 + ydist**2)
+                angle = np.arctan2(ydist, xdist)
 
-        ft = self.G * self.mass * other.mass / dist**2
-        fx = ft * np.cos(np.radians(angle))
-        fy = ft * np.sin(np.radians(angle))
-        print("ft ", ft)
-        print("fx ", fx)
-        print("fy ", fy)
-        print("Reverse: ", np.sqrt(fx**2 + fy**2))
+                ft = self.G * self.mass * other.mass / dist**2
+                fx = ft * np.cos(angle)
+                fy = ft * np.sin(angle)
 
-        ax = fx / self.mass
-        ay = fy / self.mass
-        print("ax ", ax)
-        print("ay ", ay)
+                ax = fx / self.mass
+                ay = fy / self.mass
 
-        vxf = (ax * self.DT - self.xvel) * (-1)
-        vyf = (ay * self.DT - self.yvel) * (-1)
-        print("Velocity ", np.sqrt(vxf**2+vyf**2))
-
-        self.xpos += vxf * self.DT
-        self.ypos += vyf * self.DT
-        print("final xpos ", self.xpos)
+                self.xvel += ax * self.DT
+                self.yvel += ay * self.DT
+                self.xpos += self.xvel * self.DT
+                self.ypos += self.yvel * self.DT
 
     def show_sun(self):
-        sun = plt.Circle((self.xpos, self.ypos), self.radius, color=self.colour, fill=True, label=self.name)
+        sun = plt.Circle((self.xpos*self.SCALE, self.ypos*self.SCALE), self.radius*self.SCALE, color='yellow', fill=True, label='Sun')
         plt.gca().add_artist(sun)
 
     def spawn_moons(self, total, other):
@@ -71,11 +62,13 @@ class Planet:
         return self.planets
 
     def show_moon(self):
-        moon = plt.Circle((self.xpos, self.ypos), self.radius, color='blue', fill=True)
+        moon = plt.Circle((self.xpos*self.SCALE, self.ypos*self.SCALE), self.radius*self.SCALE, color='blue', fill=True)
         plt.gca().add_artist(moon)
 
     def show_planet(self):
-        celestial_body = plt.Circle((self.xpos, self.ypos), self.radius, color=self.colour, fill=True, label=self.name)
+        plt.xlim(-1000, 1000)
+        plt.ylim(-1000, 1000)
+        celestial_body = plt.Circle((self.xpos*self.SCALE, self.ypos*self.SCALE), 40, color='yellow', fill=True, label='body')
         plt.gca().add_artist(celestial_body)
         #plt.plot(self.x_array, self.y_array, color = 'white', linestyle = '--')
         if self.planets is not None:

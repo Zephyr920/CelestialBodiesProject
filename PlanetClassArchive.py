@@ -217,3 +217,35 @@ def update_position(self, planets):
 #        plt.show()
 #        plt.clf()
 #Imma bout to need this real soon homie
+
+
+    def update_planet_position(self, other):
+
+        print("Initial xpos", self.xpos)
+        xdist = self.xpos - other.xpos
+        ydist = self.ypos - other.ypos
+        dist = np.sqrt(xdist**2 + ydist**2)
+        angle = np.arctan2(ydist, xdist) #radians
+        print(dist)
+        print("angle ", angle)
+
+        ft = self.G * self.mass * other.mass / dist**2
+        fx = ft * np.cos(np.radians(angle))
+        fy = ft * np.sin(np.radians(angle))
+        print("ft ", ft)
+        print("fx ", fx)
+        print("fy ", fy)
+        print("Reverse: ", np.sqrt(fx**2 + fy**2))
+
+        ax = fx / self.mass
+        ay = fy / self.mass
+        print("ax ", ax)
+        print("ay ", ay)
+
+        vxf = (ax * self.DT - self.xvel) * (-1)
+        vyf = (ay * self.DT - self.yvel) * (-1)
+        print("Velocity ", np.sqrt(vxf**2+vyf**2))
+
+        self.xpos += vxf * self.DT
+        self.ypos += vyf * self.DT
+        print("final xpos ", self.xpos)
