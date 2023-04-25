@@ -7,8 +7,7 @@ import math
 class Planet:
     AU = 149597871000
     G = 6.6743e-11
-    DT = 60
-    TIMESTEP = 3600 * 24 * 365
+    DT = 3600
     SCALE = 250 / AU
     def __init__(self, xpos, ypos, xvel, yvel, mass, r):
         #self.name = name
@@ -44,6 +43,8 @@ class Planet:
                 self.yvel += ay * self.DT
                 self.xpos += self.xvel * self.DT
                 self.ypos += self.yvel * self.DT
+
+        return self.xpos, self.ypos, self.xvel, self.yvel
 
     def show_sun(self):
         sun = plt.Circle((self.xpos*self.SCALE, self.ypos*self.SCALE), self.radius*self.SCALE, color='yellow', fill=True, label='Sun')
