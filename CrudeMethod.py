@@ -13,10 +13,8 @@ earth_vel = np.array([0, 3e4])
 moon_pos = np.array([1.48e11 + 3.84e8, 0])
 moon_vel = np.array([0, 1e3])
 
-# Define the gravitational constant
+#Constants
 G = 6.67e-11
-
-# Define the time step and simulation duration
 dt = 36000
 t_end = 365 * 24 * 3600
 

@@ -29,9 +29,9 @@ class planetObj:
             
 planets = []
 
-planets.append(planetObj(1.98854E+30 ,1.81899E+08	,9.83630E+08	,-1.58778E+07	,0	, 0	,	0  ))
-planets.append(planetObj(5.97219E+24	 ,-1.43778E+11		,-4.00067E+10		,-1.38875E+07		,7.65151E+03		,-2.87514E+04		,2.08354E+00		  ))
-planets.append(planetObj(6.41850E+23		 ,-1.14746E+11		,-1.96294E+11		,-1.32908E+09		,2.18369E+04		,-1.01132E+04		,-7.47957E+02		  ))
+planets.append(planetObj(1.98854E+30,1.81899E+08,9.83630E+08,-1.58778E+07,0,0,0))
+planets.append(planetObj(5.97219E+24,-1.43778E+11,-4.00067E+10,-1.38875E+07,7.65151E+03,-2.87514E+04,2.08354E+00))
+planets.append(planetObj(6.41850E+23,-1.14746E+11,-1.96294E+11,-1.32908E+09,2.18369E+04,-1.01132E+04,-7.47957E+02))
 
 
 def return_acceleration(planet,xpos,ypos,zpos): 
