@@ -12,7 +12,7 @@ import tkinter as tk
 from tkinter import ttk
 
 G = 6.6743e-11 # defines G gravity constant and below timestep is set
-dt = 24*60*60
+dt = 12*60*60
 
 class planetObj:
     def __init__(self,mass,xpos,ypos,zpos,xvel,yvel,zvel,name):
@@ -78,7 +78,18 @@ def return_acceleration(planet,xpos,ypos,zpos):
 
 totalke = []
 totalgpe = [] # the two Ke and GPE arrays are initialised
-    
+
+def com():
+    massPos_sum = np.array([0.0,0.0,0.0])
+    mass = 0
+    for planet in planets:
+        pos = np.array([planet.xpos,planet.ypos,planet.zpos])
+        m_pos = planet.mass * pos
+        mass += planet.mass
+        massPos_sum += m_pos
+    massPos_sum = massPos_sum / mass
+    return massPos_sum
+
 def update_RK4(dt): 
     totalke_temp = 0
     totalgpe_temp = 0 # temporary Ke, GPE variables for use in a loop
@@ -90,11 +101,11 @@ def update_RK4(dt):
         initialPos = np.array([thisPlanet.xpos,thisPlanet.ypos, thisPlanet.zpos]) # initial velocity and position vectors for use in the steps
         
         # first step in RK4 uses the initial values
-        dv1 = dt * np.array([thisPlanet.xforce / thisPlanet.mass , thisPlanet.yforce / thisPlanet.mass, thisPlanet.zforce / thisPlanet.mass])
+        dv1 = dt * return_acceleration(thisPlanet , initialPos[0] , initialPos[1], initialPos[2])
         dr1 = dt * vel
         
         # second step in RK4 , takes a dt/2 step forward
-        dr2 = dt * (vel + np.array([thisPlanet.xforce / thisPlanet.mass , thisPlanet.yforce / thisPlanet.mass, thisPlanet.zforce / thisPlanet.mass]) * dt/2)
+        dr2 = dt * (vel + return_acceleration(thisPlanet , initialPos[0] , initialPos[1], initialPos[2]) * dt/2)
         r = initialPos + (dr1/2)
         dv2 = dt * return_acceleration(thisPlanet , r[0] , r[1], r[2]) #uses the new r to get the next velocity
         
@@ -169,6 +180,9 @@ def update_Verlet(dt):
     totalgpe.append(totalgpe_temp)
 
 t = 0
+comArrx = []
+comArry = []
+comArrz = []
 
 fig = plt.figure()
 ax = plt.axes(projection='3d') # sets the plot for 3d
@@ -183,6 +197,9 @@ def run_simulation(tmax):
     if selected_method == "RK4":
         while t <= tmax:
             update_RK4(dt)
+            comArrx.append(com()[0])
+            comArry.append(com()[1])
+            comArrz.append(com()[2])
             t = t + dt
     elif selected_method == "Verlet":
         #step1
@@ -210,6 +227,9 @@ def run_simulation(tmax):
         t = t + dt
         while t <= tmax:
             update_Verlet(dt)
+            comArrx.append(com()[0])
+            comArry.append(com()[1])
+            comArrz.append(com()[2])
             t = t + dt
             
 # GUI code in tkinter
@@ -245,7 +265,8 @@ def create_plot(ax, zoom, selected_planet=None):
             ax.scatter(planet.xpos, planet.ypos, planet.zpos, c='red', s=100)
         else:
             ax.scatter(planet.xpos, planet.ypos, planet.zpos)
-
+    ax.plot3D(comArrx, comArry, comArrz,label="Centre of mass")
+    ax.scatter(comArrx[-1], comArry[-1], comArrz[-1],label="Centre of mass")
     ax.legend()
 
     canvas.draw()
