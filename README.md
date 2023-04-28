@@ -6,8 +6,8 @@ Physics 305 Project Repository
 
 
 Welcome to our Celestial Bodies Project, a computational physics project built in Python aimed at simulating the movement of 
-planets and other objects in our solar system , using a suitable numerical integration technique , which we chose as the Verlet method. The simulator is designed to set up the solar system, simulate the movement 
-of planets, and aims to simulate the path of space probes from launch to gravity-assist maneuvers.
+planets and other objects in our solar system , using a suitable numerical integration techniques.The simulator is designed to set up the solar system, simulate the movement 
+of planets, and aims to investigate the varying numerical integraion techniques and how they affect the dynamics and physical accuracy of our model.
 The goal of the project is to analyze the results and draw conclusions about the dynamics of space objects, and the error and accuracy of
 our simulation.
 
@@ -16,10 +16,8 @@ our simulation.
 # Aims
 
 -Set up the solar system and simulate the movement of planets  
--Launch asteroids towards Earth and test Jupiter's Effect on asteroid impacts on Earth  
--Simulate path of space probes from launch to gravity-assist manoeuvers  
 -Simulate the path of the James Webb Space Telescope  
--Analyze the results and draw conclusions about the dynamics of space objects.
+-Analyze the results and draw conclusions about the dynamics of space objects and the physical quantities that can be investigated.
 
 # Code
 
