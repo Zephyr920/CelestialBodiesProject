@@ -42,14 +42,18 @@ planet_array = [sun, mercury, venus]
 while True:
     for planet in planet_array:
         plt.plot(planet.xpos*SCALE, planet.ypos*SCALE, '.')
-        plt.plot(planet.xpos*SCALE, planet.ypos*SCALE)
-        plt.xlim(-1000, 1000)
-        plt.ylim(-1000, 1000)
+        plt.xlim(-200, 200)
+        plt.ylim(-200, 200)
         plt.gca().set_aspect('equal', adjustable='box')
         #planet.show_planet()
         planet.update_planet_position(planet_array)
     plt.pause(0.0000001)
     plt.clf()
+
+#while True:
+#    for planet in planet_array:
+#        planet.verlet_update(planet_array)
+#    print(mercury.xpos)
 
 
 

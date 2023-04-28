@@ -114,14 +114,5 @@ ax = plt.axes(projection='3d')
 
 for planet in planets:
     ax.plot3D(planet.xtraj,planet.ytraj,planet.ztraj)
-    
 
-    
-
-
-
-
-
-
-
-
+plt.show()

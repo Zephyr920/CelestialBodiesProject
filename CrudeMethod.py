@@ -3,7 +3,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-# Define the initial conditions for the sun, earth, and moon
+# ICs for Sun Earth and Moon (<- Last one is a big problem)
 sun_mass = 2e30
 earth_mass = 6e24
 moon_mass = 7.3e22
@@ -18,7 +18,7 @@ G = 6.67e-11
 dt = 36000
 t_end = 365 * 24 * 3600
 
-# Initialize the positions and velocities
+# Make variable arrays
 pos = np.array([sun_pos, earth_pos, moon_pos])
 vel = np.array([np.zeros(2), earth_vel, moon_vel])
 mass = np.array([sun_mass, earth_mass, moon_mass])
@@ -27,7 +27,7 @@ mass = np.array([sun_mass, earth_mass, moon_mass])
 t = 0
 while t < t_end:
 
-    # Calculate the gravitational forces on each object
+    # Calculate the Forces on each object
     F = np.zeros_like(pos)
     for i in range(len(pos)):
         for j in range(i+1, len(pos)):
