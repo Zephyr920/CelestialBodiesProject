@@ -10,12 +10,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pygame
 
-AU = 149597871000
 G = 6.6743e-11
-DT = 3600
-SCALE = 250 / AU
 
 class Planet:
+    
+    AU = 149597871000
+    G = 6.6743e-11
+    DT = 3600
+    SCALE = 250 / AU    
     
     def __init__(self, xpos, ypos, zpos, xvel, yvel, zvel, mass, r, colour, vis_r):
         #self.name = name
@@ -31,6 +33,7 @@ class Planet:
         self.orbit = []
         self.orbitx = []
         self.orbity = []
+        self.orbitz = []
         self.colour = colour
         self.vis_r = vis_r #Radius when we plot so it looks nice :D
         self.ke = []
@@ -40,15 +43,19 @@ class Planet:
         return self.xpos, self.ypos, self.xvel, self.yvel, self.mass, self.radius
 
     def force_calculation(self, other):
+        
         xdist = other.xpos - self.xpos
         ydist = other.ypos - self.ypos
-        dist = np.sqrt(xdist**2 + ydist**2)
-        angle = np.arctan2(ydist, xdist)
+        zdist = other.zpos - self.zpos
+        
+        dist = np.sqrt(xdist**2 + ydist**2 + zdist**2)
 
         ft = self.G * self.mass * other.mass / dist**2
-        fx = ft * np.cos(angle)
-        fy = ft * np.sin(angle)
-        return fx, fy
+        fx = ft * xdist / dist
+        fy = ft * ydist / dist
+        fz = ft * zdist / dist
+        
+        return fx, fy, fz
     
     def return_acceleration(self,planet,xpos,ypos,zpos,planets): 
         xforce = 0
@@ -81,29 +88,36 @@ class Planet:
         self.gpe.append(potential)
         return np.array([ax,ay,az]) # returns a as a vector
     
-    def update_planet_position(self, planets):
-        fxt = fyt = 0
+    def update_planet_position(self,dt, planets):
+        fxt = fyt = fzt = 0
+        dt = int(dt)
         for planet in planets:
             if self == planet:
                 continue
 
-            fx, fy = self.force_calculation(planet)
+            fx, fy, fz = self.force_calculation(planet)
             fxt += fx
             fyt += fy
+            fzt += fz
 
             ax = fxt / self.mass
             ay = fyt / self.mass
+            az = fzt / self.mass
+            
+        self.xvel += ax * dt
+        self.yvel += ay * dt
+        self.zvel += az * dt
+        self.xpos += self.xvel * dt
+        self.ypos += self.yvel * dt
+        self.zpos += self.zvel * dt
 
-        self.xvel += ax * self.DT
-        self.yvel += ay * self.DT
-        self.xpos += self.xvel * self.DT
-        self.ypos += self.yvel * self.DT
-
-        self.orbit.append((self.xpos, self.ypos))
+        self.orbit.append((self.xpos, self.ypos, self.zpos))
         self.orbitx.append(self.xpos)
         self.orbity.append(self.ypos)
+        self.orbitz.append(self.zpos)
         
     def update_RK4(self,dt,planets): 
+        dt = float(dt)
         totalke_temp = 0
         totalgpe_temp = 0 # temporary Ke, GPE variables for use in a loop
         
@@ -111,23 +125,23 @@ class Planet:
         initialPos = np.array([self.xpos,self.ypos, self.zpos]) # initial velocity and position vectors for use in the steps
         
         # first step in RK4 uses the initial values
-        dv1 = dt * self.return_acceleration(self , initialPos[0] , initialPos[1], initialPos[2])
+        dv1 = dt * self.return_acceleration(self , initialPos[0] , initialPos[1], initialPos[2],planets)
         dr1 = dt * vel
         
         # second step in RK4 , takes a dt/2 step forward
-        dr2 = dt * (vel + self.return_acceleration(self , initialPos[0] , initialPos[1], initialPos[2]) * dt/2)
+        dr2 = dt * (vel + self.return_acceleration(self , initialPos[0] , initialPos[1], initialPos[2],planets) * dt/2)
         r = initialPos + (dr1/2)
-        dv2 = dt * self.return_acceleration(self , r[0] , r[1], r[2]) #uses the new r to get the next velocity
+        dv2 = dt * self.return_acceleration(self , r[0] , r[1], r[2],planets) #uses the new r to get the next velocity
         
         # third step in RK4 , takes another dt/2 step like step 2 but instead feeds back step 2's velocity and position for this iteration
         dr3 = dt * (vel + dv2/2)
         r = initialPos + (dr2/2) #note r here is not the r from step 2 adding on dr2/2 but instead the initial position as demanded by RK4 method
-        dv3 = dt * self.return_acceleration(self , r[0] , r[1], r[2])
+        dv3 = dt * self.return_acceleration(self , r[0] , r[1], r[2],planets)
         
         # fourth step , takes a full step in dt and uses the third steps values
         dr4 = dt * (vel + dv3)
         r = initialPos + (dr3)
-        dv4 = dt * self.return_acceleration(self , r[0] , r[1], r[2])
+        dv4 = dt * self.return_acceleration(self , r[0] , r[1], r[2],planets)
         
         finalv = vel + (1/6) * (dv1 + 2*dv2 + 2*dv3 + dv4) # changes the velocity and position by the coefficients needed for RK4
         finalpos = initialPos + (1/6) * (dr1 + 2*dr2 + 2*dr3 + dr4)
@@ -143,9 +157,10 @@ class Planet:
         self.ypos = finalpos[1]
         self.zpos = finalpos[2] # assigns new coords to the planet
         
-        self.xtraj.append(finalpos[0])
-        self.ytraj.append(finalpos[1])
-        self.ztraj.append(finalpos[2]) #appends the new coords to the trajectory path used for plotting
+        self.orbit.append((self.xpos, self.ypos, self.zpos))
+        self.orbitx.append(self.xpos)
+        self.orbity.append(self.ypos)
+        self.orbitz.append(self.zpos)
         totalgpe_temp += self.gpe[-1] # sums the GPE to the total system gpe. GPE is summed twice so is divided by 2 later
         
         #remember to do the total ke and gpe in the other parts of the code

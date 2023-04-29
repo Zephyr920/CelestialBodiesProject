@@ -9,7 +9,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 import Planet as p
-import PlanetsData as psd
 
 AU = 149597871000
 TIMESTEP = 3600
@@ -47,26 +46,45 @@ planet_array = [sun, mercury, venus]
 #plt.show()
 
 rk4 = False
-
-while True:
-    for planet in planet_array:
-        plt.plot(planet.xpos*SCALE, planet.ypos*SCALE, '.')
-        plt.plot(planet.xpos*SCALE, planet.ypos*SCALE)
-        plt.xlim(-1000, 1000)
-        plt.ylim(-1000, 1000)
-        plt.gca().set_aspect('equal', adjustable='box')
-        #planet.show_planet()
-        if rk4 == False:
-            planet.update_planet_position(planet_array)
-        
-        # rk4 part
-        if rk4 == True:
-            planet.update_RK4(dt,planet_array)
-        # ke/gpe calculations here    
-        
+choice = input("Sim (S) or Orbit plot (O) \n")
+if choice == "S":
+    
+    
+    dt = input("dt in seconds (integer)")
+    choice = input("Euler (E) or RK4 (R)")
+    
+    if choice == "E":
+        rk4 = False
+    elif choice == "R":
+        rk4 = True
+    
+    #sim
+    while True:
+        for planet in planet_array:
+            plt.plot(planet.xpos*SCALE, planet.ypos*SCALE, '.')
+            plt.plot(planet.xpos*SCALE, planet.ypos*SCALE)
+            plt.xlim(-1000, 1000)
+            plt.ylim(-1000, 1000)
+            plt.gca().set_aspect('equal', adjustable='box')
+            #planet.show_planet()
+            if rk4 == False:
+                planet.update_planet_position(dt,planet_array)
             
-    plt.pause(0.0000001)
-    plt.clf()
+            # rk4 part
+            if rk4 == True:
+                planet.update_RK4(dt,planet_array)
+            # ke/gpe calculations here    
+            
+                
+        plt.pause(0.0000001)
+        plt.clf()
+elif choice == "O":
+    #orbit plot
+    dt = input("dt in seconds (integer)")
+
+
+
+
     
     
     
