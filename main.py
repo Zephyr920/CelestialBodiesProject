@@ -1,14 +1,20 @@
-#Main File
+# -*- coding: utf-8 -*-
+"""
+Created on Sat Apr 29 00:18:07 2023
+
+@author: Agustin
+"""
+
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 import Planet as p
-import PlanetsData as psd
 
 AU = 149597871000
 TIMESTEP = 3600
 PAUSE = 0.001
 SCALE = 250 / AU
+dt = 12*60*60
 
 sun = p.Planet(1.81899E+08, 9.83630E+08, -1.58778E+07, -1.12474E+01, 7.54876E+00, 2.68723E-01, 1.98854E+30, 6.95500E+08, 'yellow', 30)
 mercury = p.Planet(-5.67576E+10, -2.73592E+10, 2.89173E+09, 1.16497E+04, -4.14793E+04, -4.45952E+03, 3.30200E+23, 2.44000E+06, 'white', 6)
@@ -39,19 +45,59 @@ planet_array = [sun, mercury, venus]
 #ani = FuncAnimation(fig, update_plot, frames=365, interval=10)
 #plt.show()
 
-while True:
-    for planet in planet_array:
-        plt.plot(planet.xpos*SCALE, planet.ypos*SCALE, '.')
-        plt.plot(planet.xpos*SCALE, planet.ypos*SCALE)
-        plt.xlim(-1000, 1000)
-        plt.ylim(-1000, 1000)
-        plt.gca().set_aspect('equal', adjustable='box')
-        #planet.show_planet()
-        planet.update_planet_position(planet_array)
-    plt.pause(0.0000001)
-    plt.clf()
+rk4 = False
+choice = input("Sim (S) or Orbit plot (O) \n")
+if choice == "S":
+    
+    
+    dt = input("dt in seconds (integer)")
+    choice = input("Euler (E) or RK4 (R)")
+    
+    if choice == "E":
+        rk4 = False
+    elif choice == "R":
+        rk4 = True
+    
+    #sim
+    while True:
+        for planet in planet_array:
+            plt.plot(planet.xpos*SCALE, planet.ypos*SCALE, '.')
+            plt.plot(planet.xpos*SCALE, planet.ypos*SCALE)
+            plt.xlim(-1000, 1000)
+            plt.ylim(-1000, 1000)
+            plt.gca().set_aspect('equal', adjustable='box')
+            #planet.show_planet()
+            if rk4 == False:
+                planet.update_planet_position(dt,planet_array)
+            
+            # rk4 part
+            if rk4 == True:
+                planet.update_RK4(dt,planet_array)
+            # ke/gpe calculations here    
+            
+                
+        plt.pause(0.0000001)
+        plt.clf()
+elif choice == "O":
+    #orbit plot
+    dt = input("dt in seconds (integer)")
 
 
 
 
-
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
