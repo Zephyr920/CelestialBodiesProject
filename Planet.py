@@ -150,7 +150,7 @@ class Planet:
 
     def update_planet_position_verlet(self, planets):
         #Setting the initial acceleration as 0
-        x_acc = y_acc = 0
+        ax = ay = 0
 
         #Making sure the 2 planets we're working with aren't the same
         for planet in planets:
@@ -159,23 +159,24 @@ class Planet:
 
             #Calculating the forces of the planets
             fx, fy = self.force_calculation(planet)
-            x_acc += fx / self.mass
-            y_acc += fy / self.mass
+            ax += fx / self.mass
+            ay += fy / self.mass
 
-        self.xpos += self.xvel * self.DT + 0.5 * x_acc * self.DT ** 2
-        self.ypos += self.yvel * self.DT + 0.5 * y_acc * self.DT ** 2
+        #Updating position
+        self.xpos += self.xvel * self.DT + 0.5 * ax * self.DT ** 2
+        self.ypos += self.yvel * self.DT + 0.5 * ax * self.DT ** 2
 
-        x_acc_new = y_acc_new = 0
+        ax_new = ay_new = 0
         for planet in planets:
             if self == planet:
                 continue
 
             fx, fy = self.force_calculation(planet)
-            x_acc_new += fx / self.mass
-            y_acc_new += fy / self.mass
+            ax_new += fx / self.mass
+            ay_new += fy / self.mass
 
-        self.xvel += 0.5 * (x_acc + x_acc_new) * self.DT
-        self.yvel += 0.5 * (y_acc + y_acc_new) * self.DT
+        self.xvel += 0.5 * (ax + ax_new) * self.DT
+        self.yvel += 0.5 * (ay + ay_new) * self.DT
 
         self.orbit.append((self.xpos, self.ypos))
         self.orbitx.append(self.xpos)

@@ -6,8 +6,7 @@ import Planet as p
 import PlanetsData as psd
 
 AU = 149597871000
-TIMESTEP = 3600
-PAUSE = 0.001
+PAUSE = 0.0000001
 SCALE = 250 / AU
 
 sun = p.Planet(1.81899E+08, 9.83630E+08, -1.58778E+07, -1.12474E+01, 7.54876E+00, 2.68723E-01, 1.98854E+30, 6.95500E+08, 'yellow', 30)
@@ -21,23 +20,7 @@ uranus = p.Planet(2.62506E+12, 1.40273E+12, -2.87982E+10, -3.25937E+03, 5.68878E
 neptune = p.Planet(4.30300E+12, -1.24223E+12, -7.35857E+10, 1.47132E+03, 5.25363E+03, -1.42701E+02, 1.02410E+26, 2.46240E+07, 'white', 9)
 pluto = p.Planet(1.65554E+12, -4.73503E+12, 2.77962E+10, 5.24541E+03, 6.38510E+02, -1.60709E+03, 1.30700E+22, 1.19500E+06, 'white', 4)
 
-planet_array = [sun, mercury, venus]
-
-#fig, ax = plt.subplots()
-#ax.set_xlim(-0.1e10, 0.1e10)
-#ax.set_ylim(-0.1e10, 0.1e10)
-#ax.set_aspect('equal')
-#def update_plot(frame):
-#    for i in range(len(planet_array)):
-#        planet_array[i].update_planet_position(planet_array)
-#        ax.clear()
-#        ax.plot(planet_0.xpos, planet_0.ypos, 'ro')
-#        ax.set_xlim(-0.1e10, 0.1e10)
-#        ax.set_ylim(-0.1e10, 0.1e10)
-#        ax.set_aspect('equal')
-
-#ani = FuncAnimation(fig, update_plot, frames=365, interval=10)
-#plt.show()
+planet_array = [sun, mercury]
 
 while True:
     for planet in planet_array:
@@ -46,13 +29,13 @@ while True:
         plt.ylim(-200, 200)
         plt.gca().set_aspect('equal', adjustable='box')
         #planet.show_planet()
-        planet.update_planet_position(planet_array)
-    plt.pause(0.0000001)
+        planet.update_planet_position_verlet(planet_array)
+    plt.pause(PAUSE)
     plt.clf()
 
 #while True:
 #    for planet in planet_array:
-#        planet.verlet_update(planet_array)
+#        planet.update_planet_position_verlet(planet_array)
 #    print(mercury.xpos)
 
 
