@@ -6,6 +6,7 @@ import Planet as p
 import PlanetsData as psd
 
 AU = 149597871000
+DT = 3600*24*365
 PAUSE = 0.0000001
 SCALE = 250 / AU
 
@@ -20,7 +21,7 @@ uranus = p.Planet(2.62506E+12, 1.40273E+12, -2.87982E+10, -3.25937E+03, 5.68878E
 neptune = p.Planet(4.30300E+12, -1.24223E+12, -7.35857E+10, 1.47132E+03, 5.25363E+03, -1.42701E+02, 1.02410E+26, 2.46240E+07, 'white', 9)
 pluto = p.Planet(1.65554E+12, -4.73503E+12, 2.77962E+10, 5.24541E+03, 6.38510E+02, -1.60709E+03, 1.30700E+22, 1.19500E+06, 'white', 4)
 
-planet_array = [sun, mercury]
+planet_array = [sun, mercury, venus, earth, mars, jupiter, saturn]
 
 while True:
     for planet in planet_array:
@@ -28,15 +29,13 @@ while True:
         plt.xlim(-200, 200)
         plt.ylim(-200, 200)
         plt.gca().set_aspect('equal', adjustable='box')
-        #planet.show_planet()
-        planet.update_planet_position_verlet(planet_array)
+        planet.update_planet_position_verlet(planet_array, DT)
     plt.pause(PAUSE)
     plt.clf()
 
-#while True:
-#    for planet in planet_array:
-#        planet.update_planet_position_verlet(planet_array)
-#    print(mercury.xpos)
+
+
+
 
 
 
