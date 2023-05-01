@@ -6,9 +6,10 @@ import pygame
 G = 6.6743e-11 #¬¬
 
 class Planet:
+
     AU = 149597871000
     G = 6.6743e-11
-    DT = 3600*24*365*3600
+    DT = 3600
     SCALE = 250 / AU
     def __init__(self, xpos, ypos, zpos, xvel, yvel, zvel, mass, r, colour, vis_r):
         #self.name = name
@@ -29,7 +30,6 @@ class Planet:
         self.vis_r = vis_r #Radius when we plot so it looks nice :D
         self.ke = []
         self.gpe = []
-        self.potential = []
 
     def show_properties(self):
         return self.xpos, self.ypos, self.xvel, self.yvel, self.mass, self.radius
@@ -57,13 +57,12 @@ class Planet:
         potential = 0
         for i in range(len(planets)):  # loop for the planets list , could use for planet in planets too
             if planet != planets[i]:
-                otherPlanet = planets[
-                    i]  # gets acceleration on the selected planet from all the other planets hence it loops through all others with a planet != planets[i] check
+                otherPlanet = planets[i]  # gets acceleration on the selected planet from all the other planets hence it loops through all others with a planet != planets[i] check
 
                 dx = self.xpos - otherPlanet.xpos  # calculates the difference in x,y,z coords from the other planet to then carry out newtons law of gravitation calculations
                 dy = self.ypos - otherPlanet.ypos
                 dz = self.zpos - otherPlanet.zpos
-                dist = np.sqrt(dx ** 2 + dy ** 2 + dz ** 2)  # calculates distance from the dx,dy,dz variables
+                dist = np.sqrt(dx**2 + dy**2 + dz**2)  # calculates distance from the dx,dy,dz variables
 
                 f = G * otherPlanet.mass * self.mass / dist ** 2  # newtons law of gravitation
                 fx = f * dx / dist
@@ -80,7 +79,7 @@ class Planet:
 
                 potential += -G * otherPlanet.mass * self.mass / dist  # calculates the GPE for use in energy conservation plots later
         self.gpe.append(potential)
-        return np.array([ax, ay, az])
+        return np.array([ax,ay,az]) # returns a as a vector
 
     def update_planet_position_euler(self, planets, dt):
         fxt = fyt = fzt = 0
@@ -128,8 +127,7 @@ class Planet:
         totalgpe_temp = 0  # temporary Ke, GPE variables for use in a loop
 
         vel = np.array([self.xvel, self.yvel, self.zvel])
-        initialPos = np.array(
-            [self.xpos, self.ypos, self.zpos])  # initial velocity and position vectors for use in the steps
+        initialPos = np.array([self.xpos, self.ypos, self.zpos])  # initial velocity and position vectors for use in the steps
 
         # first step in RK4 uses the initial values
         dv1 = dt * self.return_acceleration(self, initialPos[0], initialPos[1], initialPos[2], planets)
@@ -151,8 +149,7 @@ class Planet:
         r = initialPos + (dr3)
         dv4 = dt * self.return_acceleration(self, r[0], r[1], r[2], planets)
 
-        finalv = vel + (1 / 6) * (
-                    dv1 + 2 * dv2 + 2 * dv3 + dv4)  # changes the velocity and position by the coefficients needed for RK4
+        finalv = vel + (1 / 6) * (dv1 + 2 * dv2 + 2 * dv3 + dv4)  # changes the velocity and position by the coefficients needed for RK4
         finalpos = initialPos + (1 / 6) * (dr1 + 2 * dr2 + 2 * dr3 + dr4)
 
         self.xvel = finalv[0]
@@ -171,8 +168,7 @@ class Planet:
         self.orbitx.append(self.xpos)
         self.orbity.append(self.ypos)
         self.orbitz.append(self.zpos)
-        totalgpe_temp += self.gpe[
-            -1]  # sums the GPE to the total system gpe. GPE is summed twice so is divided by 2 later
+        totalgpe_temp += self.gpe[-1]  # sums the GPE to the total system gpe. GPE is summed twice so is divided by 2 later
 
         # remember to do the total ke and gpe in the other parts of the code
 
