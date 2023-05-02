@@ -135,20 +135,8 @@ def create_plot(ax, zoom, replot,selected_planet=None):
     ax.legend()
     canvas.draw()
     
-    if replot == True:
         
-        plt.plot(np.arange(0,len(total_ke)), total_ke)
-        plt.plot(np.arange(0,len(total_gpe)), total_gpe)
-        totale = np.array(total_gpe) + np.array(total_ke)
-        plt.plot(np.arange(0,len(total_gpe)), totale)
-        plt.show()
         
-        plt.plot(np.arange(len(comArr_r)),comArr_r,label="centre of mass pos")
-        plt.title("Centre of mass plot for " + integration_method.get() + " method")
-        plt.show()
-    
-        ef.error_from_exact(planet_array,dt)
-
 def update_zoom(event):
     zoom_exponent = float(event)
     create_plot(ax, 10**zoom_exponent,False)
@@ -189,7 +177,18 @@ def on_submit():
             planet.orbity.append(planet.ypos)
             planet.orbitz.append(planet.zpos)
     run_simulation(tmax)
-    create_plot(ax, float(zoom_var.get()),True, selected_planet)
+    
+    create_plot(ax, 1e11,True, selected_planet)
+    plt.plot(np.arange(0,len(total_ke)), total_ke)
+    plt.plot(np.arange(0,len(total_gpe)), total_gpe)
+    totale = np.array(total_gpe) + np.array(total_ke)
+    plt.plot(np.arange(0,len(total_gpe)), totale)
+    plt.show()      
+    plt.plot(np.arange(len(comArr_r)),comArr_r,label="centre of mass pos")
+    plt.title("Centre of mass plot for " + integration_method.get() + " method")
+    plt.show() 
+    ef.error_from_exact(planet_array,dt)
+
     
 root = tk.Tk()
 root.title("Solar System Simulation")
