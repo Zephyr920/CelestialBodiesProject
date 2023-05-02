@@ -7,6 +7,8 @@ Created on Sat Apr 29 00:05:17 2023
 
 #Planet Class
 import numpy as np
+import matplotlib.pyplot as plt
+import pygame
 
 G = 6.6743e-11
 
@@ -43,10 +45,6 @@ class Planet:
         self.potential = []
         self.ke = []
         self.gpe = []
-        
-        self.truncation_error_euler = []
-        self.truncation_error_rk4 = []
-        self.truncation_error_verlet = []
 
     def show_properties(self):
         return self.xpos, self.ypos, self.xvel, self.yvel, self.mass
@@ -226,3 +224,71 @@ class Planet:
         
         
         #remember to do the total ke and gpe in the other parts of the code
+        
+    def show_sun(self):
+        sun = plt.Circle((self.xpos*self.SCALE, self.ypos*self.SCALE), self.radius*self.SCALE, color='yellow', fill=True, label='Sun')
+        plt.gca().add_artist(sun)
+
+    def spawn_moons(self, total, other):
+        self.planets = []
+        for i in range(total):
+            r = self.radius * 0.5
+            #d = np.random.uniform(100, 200)
+            xpos = np.random.randint(-100, 100)
+            ypos = np.random.randint(-100, 100)
+            #xpos = 0
+            #ypos = np.random.randint(-100, 100)
+            self.planets.append(Planet('moon', other.xpos+xpos, other.ypos+ypos, 0, 0, 0, r, None)) #Need to add that it's xpos and ypos from the planet
+        return self.planets
+
+    def show_moon(self):
+        moon = plt.Circle((self.xpos*self.SCALE, self.ypos*self.SCALE), self.radius*self.SCALE, color='blue', fill=True)
+        plt.gca().add_artist(moon)
+
+    def show_planet(self):
+        plt.xlim(800, 800)
+        plt.ylim(800, 800)
+        celestial_body = plt.Circle((self.xpos*self.SCALE, self.ypos*self.SCALE), self.vis_r, color=self.colour, fill=True, label='body')
+        plt.gca().add_artist(celestial_body)
+    def pygame_plot(self, win):
+        x = self.xpos * self.SCALE + 800 / 2
+        y = self.ypos * self.SCALE + 800 / 2
+
+        if len(self.orbit) > 2:
+            updated_points = []
+            for point in self.orbit:
+                x, y = point
+                x = x * self.SCALE + 800 / 2
+                y = y * self.SCALE + 800 / 2
+                updated_points.append((x, y))
+            pygame.draw.lines(win, self.colour, False, updated_points, 2)
+
+        pygame.draw.circle(win, self.colour, (x, y), self.vis_r)
+
+    def pygame_forces(self, other):
+        xdist = other.xpos - self.xpos
+        ydist = other.ypos - self.ypos
+        dist = np.sqrt(xdist**2 + ydist**2)
+
+        ft = self.G * self.mass * other.mass / dist**2
+        angle = np.arctan2(ydist, xdist)
+        fx = np.cos(angle) * ft
+        fy = np.sin(angle) * ft
+        return fx, fy
+
+    def pygame_update_position(self, planets):
+        fxt = fyt = 0
+        for planet in planets:
+            if self == planet:
+                continue
+
+            fx, fy = self.pygame_forces(planet)
+            fxt += fx
+            fyt += fy
+
+        self.xvel += fxt / self.mass * self.DT
+        self.yvel += fyt / self.mass * self.DT
+
+        self.xpos += self.xvel * self.DT
+        self.ypos += self.yvel * self.DT
+        self.orbit.append((self.xpos, self.ypos))
