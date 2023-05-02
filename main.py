@@ -44,7 +44,7 @@ with open('planet_data.csv', newline='') as csvfile:
     
 def menu():
     selection = 1
-    choice = input("Sim (S) or Orbit plot (O) or error plots (E) \n")
+    choice = input("Sim (S) or Orbit plot (O) \n")
     dt = int(input("dt in seconds (integer)"))
     
     if choice == "S":
@@ -146,11 +146,6 @@ def menu():
             planet.xvel = planet.initial_xvel
             planet.yvel = planet.initial_yvel
             planet.zvel = planet.initial_zvel
-        menu()
-        
-    elif choice == "E":
-        tmax = int(input("tmax in days for error calculations (integer)"))
-        ef.truncation_errors(dt, tmax*60*60*24 ,planet_array)
         menu()
 menu()    
 
