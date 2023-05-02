@@ -1,65 +1,176 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Sat Apr 29 00:18:07 2023
+
+@author: Agustin
+"""
+
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
+import ExtraFunctions as ef
 import Planet as p
+import csv
+
+daysUntil_07052033 = 3658
 
 AU = 149597871000
-DT = 3600
-PAUSE = 0.0000001
+TIMESTEP = 3600
+PAUSE = 0.001
 SCALE = 250 / AU
 dt = 12*60*60
 
-sun = p.Planet(1.81899E+08, 9.83630E+08, -1.58778E+07, -1.12474E+01, 7.54876E+00, 2.68723E-01, 1.98854E+30, 6.95500E+08, 'yellow', 30)
-mercury = p.Planet(-5.67576E+10, -2.73592E+10, 2.89173E+09, 1.16497E+04, -4.14793E+04, -4.45952E+03, 3.30200E+23, 2.44000E+06, 'white', 6)
-venus = p.Planet(4.28480E+10, 1.00073E+11, -1.11872E+09, -3.22930E+04, 1.36960E+04, 2.05091E+03, 4.86850E+24, 6.05180E+06, 'white', 8)
-earth = p.Planet(-1.43778E+11, -4.00067E+10, -1.38875E+07, 7.65151E+03, -2.87514E+04, 2.08354E+00, 5.97219E+24, 6.37101E+06, 'blue', 12)
-mars = p.Planet(-1.14746E+11, -1.96294E+11, -1.32908E+09, 2.18369E+04, -1.01132E+04, -7.47957E+02, 6.41850E+23, 3.38990E+06, 'red', 13)
-jupiter = p.Planet(-5.66899E+11, -5.77495E+11, 1.50755E+10, 9.16793E+03, -8.53244E+03, -1.69767E+02, 1.89813E+27, 6.99110E+07, 'white', 18)
-saturn = p.Planet(8.20513E+10, -1.50241E+12, 2.28565E+10, 9.11312E+03, 4.96372E+02, -3.71643E+02, 5.68319E+26, 5.82320E+07, 'white', 15)
-uranus = p.Planet(2.62506E+12, 1.40273E+12, -2.87982E+10, -3.25937E+03, 5.68878E+03, 6.32569E+01, 8.68103E+25, 2.53620E+07, 'white', 13)
-neptune = p.Planet(4.30300E+12, -1.24223E+12, -7.35857E+10, 1.47132E+03, 5.25363E+03, -1.42701E+02, 1.02410E+26, 2.46240E+07, 'white', 9)
-pluto = p.Planet(1.65554E+12, -4.73503E+12, 2.77962E+10, 5.24541E+03, 6.38510E+02, -1.60709E+03, 1.30700E+22, 1.19500E+06, 'white', 4)
-
-planet_array = [sun, mercury, venus, earth, mars, jupiter, saturn]
-
-rk4 = False
-choice = input("Sim (S) or Orbit plot (O) \n")
-if choice == "S":
+total_ke = []
+total_gpe = []
+comArrx = []
+comArry = []
+comArrz = []
+comArr_r = []
 
 
-    dt = input("dt in seconds (integer)")
-    choice = input("Euler (E) or RK4 (R)")
 
-    if choice == "E":
-        rk4 = False
-    elif choice == "R":
-        rk4 = True
+planet_array = [] # initialises planet list
+namelist = ["Sun","Venus","Mercury""Earth","Moon","Mars","Jupiter","Saturn","Uranus","Neptune","Pluto","JWST"] # namelist for planets
+with open('planet_data.csv', newline='') as csvfile:
+    reader = csv.reader(csvfile)
+    next(reader)  # skip header row
+    index = 0 # index for the name list
+    for row in reader:    
+        mass, xpos, ypos, zpos, xvel, yvel, zvel = map(float, row)
+        planet_array.append(p.Planet(xpos * 1e3, ypos * 1e3, zpos * 1e3, xvel * 1e3, yvel * 1e3, zvel * 1e3,mass)) #numbers from JPL Horizons are in km , 1e3 turns it into metres
+        
+        index = index + 1 
 
-    #sim
-    while True:
+    
+def menu():
+    selection = 1
+    choice = input("Sim (S) or Orbit plot (O) or error plots (E) \n")
+    dt = int(input("dt in seconds (integer)"))
+    
+    if choice == "S":
+        
+        selection = int(input("Euler (1) or RK4 (2) or Verlet (3)"))    
+        #sim
+        while True:
+            total_ke_temp = 0
+            total_gpe_temp = 0
+            for planet in planet_array:
+                #planet.show_planet()
+                if selection == 1:
+                    planet.update_planet_position_euler(planet_array,dt)
+                
+                # rk4 part
+                if selection == 2:
+                    planet.update_planet_position_rk4(planet_array,dt)
+                    
+                if selection == 3:
+                    planet.update_planet_position_verlet(planet_array,dt)
+                
+                plt.scatter(planet.xpos, planet.ypos)
+                plt.plot(planet.orbitx,planet.orbity)
+            
+            plt.show()
+            
+         
+    
+    elif choice == "O":
+        #orbit plot
+        
+        fig = plt.figure()
+        ax = plt.axes(projection='3d') # sets the plot for 3d 
+        
+        t = 0
+        tmax = int(input("Input sim time in days (integer)"))
+        tmax = tmax * 24 * 60 * 60
+        selection = int(input("Euler (1) or RK4 (2) or Verlet (3)"))   
+        if choice == "E":
+            rk4 = False
+        elif choice == "R":
+            rk4 = True
+        
+        while t <= tmax:
+            total_ke_temp = 0
+            total_gpe_temp = 0
+            for planet in planet_array:
+                 
+                if selection == 1:
+                    planet.update_planet_position_euler(planet_array,dt)
+                
+                # rk4 part
+                if selection == 2:
+                    planet.update_planet_position_rk4(planet_array,dt)
+                    
+                if selection == 3:
+                    planet.update_planet_position_verlet(planet_array,dt)
+                
+                total_ke_temp += planet.ke[-1]
+                total_gpe_temp += planet.gpe[-1]
+                #centre of mass calculations
+                centre_of_mass = ef.com(planet_array)
+                comArrx.append(centre_of_mass[0])
+                comArry.append(centre_of_mass[1])
+                comArrz.append(centre_of_mass[2])
+                comArr_r.append(np.sqrt(centre_of_mass[0]**2 + centre_of_mass[1]**2 + centre_of_mass[2]**2))
+            #energy calculations
+            total_ke.append(total_ke_temp)
+            total_gpe.append(total_gpe_temp)
+            t = t + dt
         for planet in planet_array:
-            plt.plot(planet.xpos*SCALE, planet.ypos*SCALE, '.')
-            plt.plot(planet.xpos*SCALE, planet.ypos*SCALE)
-            plt.xlim(-1000, 1000)
-            plt.ylim(-1000, 1000)
-            plt.gca().set_aspect('equal', adjustable='box')
-            #planet.show_planet()
-            if rk4 == False:
-                planet.update_planet_position(dt,planet_array)
+            ax.plot3D(comArrx, comArry,comArrz)
+            ax.scatter(comArrx[-1], comArry[-1],comArrz[-1])
+            ax.plot3D(planet.orbitx, planet.orbity,planet.orbitz)
+            ax.scatter(planet.orbitx[-1], planet.orbity[-1],planet.orbitz[-1])
+        plt.show()
+        plt.plot(total_gpe)
+        plt.plot(total_ke)
+        plt.plot(np.array(total_gpe)+np.array(total_ke))
+        plt.show()
+        if selection == 1:
+            method = "Euler"
+        if selection == 2:
+            method = "RK4"
+        if selection == 3:
+            method = "Verlet"
+        plt.plot(np.arange(len(comArr_r)),comArr_r,label="centre of mass pos")
+        plt.title("Centre of mass plot for " + method + " method")
+        plt.show()
+        ef.error_from_exact(planet_array,dt)
+        
+        for planet in planet_array:
+            planet.orbitx = []
+            planet.orbity = []
+            planet.orbitz = []
+            planet.xpos = planet.initial_xpos
+            planet.ypos = planet.initial_ypos
+            planet.zpos = planet.initial_zpos
+            planet.xvel = planet.initial_xvel
+            planet.yvel = planet.initial_yvel
+            planet.zvel = planet.initial_zvel
+        menu()
+        
+    elif choice == "E":
+        tmax = int(input("tmax in days for error calculations (integer)"))
+        ef.truncation_errors(dt, tmax*60*60*24 ,planet_array)
+        menu()
+menu()    
 
-            # rk4 part
-            if rk4 == True:
-                planet.update_RK4(dt,planet_array)
-            # ke/gpe calculations here
-
-
-        plt.pause(PAUSE)
-        plt.clf()
-elif choice == "O":
-    #orbit plot
-    dt = input("dt in seconds (integer)")
 
 
 
 
-
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
