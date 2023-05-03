@@ -1,10 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Sat Apr 29 00:05:17 2023
-
-@author: Agustin
-"""
-
 #Planet Class
 import numpy as np
 import matplotlib.pyplot as plt
@@ -19,7 +13,7 @@ class Planet:
     DT = 3600
     SCALE = 250 / AU    
     
-    def __init__(self, xpos, ypos, zpos, xvel, yvel, zvel, mass,name):
+    def __init__(self, xpos, ypos, zpos, xvel, yvel, zvel, mass, name):
         
         self.initial_xpos = xpos
         self.initial_ypos = ypos
@@ -27,7 +21,7 @@ class Planet:
         self.initial_xvel = xvel
         self.initial_yvel = yvel
         self.initial_zvel = zvel
-        
+
         self.name = name
         self.xpos = xpos
         self.ypos = ypos
