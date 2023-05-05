@@ -11,9 +11,9 @@ class Planet:
     AU = 149597871000
     G = 6.6743e-11
     DT = 3600
-    SCALE = 250 / AU    
+    SCALE = 150 / AU
     
-    def __init__(self, xpos, ypos, zpos, xvel, yvel, zvel, mass, name):
+    def __init__(self, xpos, ypos, zpos, xvel, yvel, zvel, mass, name, colour, vis_r):
         
         self.initial_xpos = xpos
         self.initial_ypos = ypos
@@ -30,6 +30,8 @@ class Planet:
         self.yvel = yvel
         self.zvel = zvel
         self.mass = mass
+        self.colour = colour
+        self.vis_r = vis_r
         self.planets = []
         self.orbit = []
         self.orbitx = []
@@ -215,35 +217,7 @@ class Planet:
         self.orbitx.append(self.xpos)
         self.orbity.append(self.ypos)
         self.orbitz.append(self.zpos)
-        
-        
-        #remember to do the total ke and gpe in the other parts of the code
-        
-    def show_sun(self):
-        sun = plt.Circle((self.xpos*self.SCALE, self.ypos*self.SCALE), self.radius*self.SCALE, color='yellow', fill=True, label='Sun')
-        plt.gca().add_artist(sun)
 
-    def spawn_moons(self, total, other):
-        self.planets = []
-        for i in range(total):
-            r = self.radius * 0.5
-            #d = np.random.uniform(100, 200)
-            xpos = np.random.randint(-100, 100)
-            ypos = np.random.randint(-100, 100)
-            #xpos = 0
-            #ypos = np.random.randint(-100, 100)
-            self.planets.append(Planet('moon', other.xpos+xpos, other.ypos+ypos, 0, 0, 0, r, None)) #Need to add that it's xpos and ypos from the planet
-        return self.planets
-
-    def show_moon(self):
-        moon = plt.Circle((self.xpos*self.SCALE, self.ypos*self.SCALE), self.radius*self.SCALE, color='blue', fill=True)
-        plt.gca().add_artist(moon)
-
-    def show_planet(self):
-        plt.xlim(800, 800)
-        plt.ylim(800, 800)
-        celestial_body = plt.Circle((self.xpos*self.SCALE, self.ypos*self.SCALE), self.vis_r, color=self.colour, fill=True, label='body')
-        plt.gca().add_artist(celestial_body)
     def pygame_plot(self, win):
         x = self.xpos * self.SCALE + 800 / 2
         y = self.ypos * self.SCALE + 800 / 2
@@ -286,3 +260,41 @@ class Planet:
         self.xpos += self.xvel * self.DT
         self.ypos += self.yvel * self.DT
         self.orbit.append((self.xpos, self.ypos))
+
+    def pygame_update_position_verlet(self, planets, dt):
+        #Setting the initial acceleration as 0
+        ax = ay = 0
+        #Making sure the 2 planets we're working with aren't the same
+        potential = 0
+        for planet in planets:
+            if self == planet:
+                continue
+
+            #Calculating the forces of the planets
+            fx, fy, fz, dist = self.force_calculation(planet)
+            ax += fx / self.mass
+            ay += fy / self.mass
+            potential += -G * self.mass * planet.mass / dist
+
+        #Updating position
+        self.xpos += self.xvel * dt + 0.5 * ax * dt ** 2
+        self.ypos += self.yvel * dt + 0.5 * ay * dt ** 2
+
+        ax_new = ay_new = 0
+        for planet in planets:
+            if self == planet:
+                continue
+
+            fx, fy, fz, dist = self.force_calculation(planet)
+            ax_new += fx / self.mass
+            ay_new += fy / self.mass
+
+        self.gpe.append(np.sum(potential)/2)
+
+        #Updating new velocities using the average of the start acceleration and next acceleration
+        self.xvel += 0.5 * (ax + ax_new) * dt
+        self.yvel += 0.5 * (ay + ay_new) * dt
+
+        self.orbit.append((self.xpos, self.ypos))
+        self.orbitx.append(self.xpos)
+        self.orbity.append(self.ypos)

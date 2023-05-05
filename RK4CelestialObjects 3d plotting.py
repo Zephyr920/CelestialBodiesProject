@@ -379,13 +379,3 @@ zoom_scale = ttk.Scale(frame, from_=9, to=13, orient=tk.HORIZONTAL, command=upda
 zoom_scale.grid(row=1, column=1, padx=5, pady=5, sticky=tk.W)
 
 root.mainloop()
-
-    
-
-
-
-
-
-
-
-

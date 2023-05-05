@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Mon Apr 24 21:35:06 2023
-
-@author: Agustin
-"""
 import csv
 import numpy as np
 import matplotlib.pyplot as plt
@@ -237,13 +232,3 @@ vertical_rotation_scale.grid(row=3, column=0, sticky=(tk.W, tk.E))
 zoom_scale = ttk.Scale(frame, from_=9, to=13, orient=tk.HORIZONTAL, command=update_zoom)
 zoom_scale.grid(row=1, column=1, padx=5, pady=5, sticky=tk.W)
 root.mainloop()
-
-    
-
-
-
-
-
-
-
-
