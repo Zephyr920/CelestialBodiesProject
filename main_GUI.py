@@ -1,4 +1,10 @@
 # -*- coding: utf-8 -*-
+"""
+Created on Mon Apr 24 21:35:06 2023
+
+@author: Agustin
+"""
+
 import csv
 import numpy as np
 import matplotlib.pyplot as plt
@@ -7,10 +13,9 @@ import tkinter as tk
 import ExtraFunctions as ef
 import Planet as p
 from tkinter import ttk
+import time as time
 
-daysUntil_07052033 = 3658
-dt = 12*60*60
-
+t = 0
 total_ke = []
 total_gpe = []
 comArrx = []
@@ -19,31 +24,108 @@ comArrz = []
 comArr_r = []
 
 planet_array = [] # initialises planet list
-namelist = ["Sun","Earth","Moon","Venus","Mercury","Mars","Jupiter","Saturn","Uranus","Neptune","Pluto","JWST"] # namelist for planets
-with open('planet_data.csv', newline='') as csvfile:
+namelist = ["Sun","Earth","Moon","Venus","Mercury","Mars","Jupiter","Saturn","Uranus","Neptune","Pluto","JWST","Halley"] # namelist for planets
+with open('planet_data.csv',encoding='utf-8-sig',newline='') as csvfile:
     reader = csv.reader(csvfile)
-    next(reader)  # skip header row
     index = 0 # index for the name list
     for row in reader:    
         mass, xpos, ypos, zpos, xvel, yvel, zvel = map(float, row)
         planet_array.append(p.Planet(xpos * 1e3, ypos * 1e3, zpos * 1e3, xvel * 1e3, yvel * 1e3, zvel * 1e3,mass,namelist[index])) #numbers from JPL Horizons are in km , 1e3 turns it into metres
         index = index + 1 
-t = 0
-comArrx = []
-comArry = []
-comArrz = []
 
-fig = plt.figure()
-ax = plt.axes(projection='3d') # sets the plot for 3d
+
+fig = plt.Figure(figsize=(10, 10), dpi=100)
+
+ax = fig.add_subplot(111, projection='3d') # sets the plot for 3d
 
 for planet in planet_array:
     ax.plot3D(planet.orbitx,planet.orbity,planet.orbitz)
 plt.savefig('filename.png', dpi=600)
 
-def run_simulation(tmax):
+def time_plots():
+    time_arr = [9000,13500,18000,28000,36000,54000,72000,108000,144000,216000,288000]
+    method_list = ["Euler","Verlet","RK4"]
+    euler_time = []
+    verlet_time = []
+    RK4_time = []
+    for method in method_list:
+        for dt in time_arr:
+            start = time.time()
+            tmax = int(tmax_var.get())* 24 * 60 * 60
+            run_simulation(tmax,method,dt)
+            end = time.time()
+            elapsed = end - start
+            if method == "Euler":
+                euler_time.append(elapsed)
+            elif method == "Verlet":
+                verlet_time.append(elapsed)
+            elif method == "RK4":
+                RK4_time.append(elapsed)
+        for planet in planet_array:
+            planet.orbitx = []
+            planet.orbity = []
+            planet.orbitz = []
+            planet.vel_arr = []
+            planet.planets = []
+            planet.ke = []
+            planet.gpe = []
+            planet.potential = []
+            planet.xvel = planet.initial_xvel
+            planet.yvel = planet.initial_yvel
+            planet.zvel = planet.initial_zvel
+            planet.xpos = planet.initial_xpos
+            planet.ypos = planet.initial_ypos
+            planet.zpos = planet.initial_zpos
+    plt.show()
+    plt.plot(time_arr,euler_time,label="Euler")
+    plt.plot(time_arr,verlet_time,label="Verlet")
+    plt.plot(time_arr,RK4_time,label="RK4")
+    
+    
+    log_time = np.log(np.array(time_arr))
+    log_euler_time = np.log(np.array(euler_time))
+    log_verlet_time = np.log(np.array(verlet_time))
+    log_RK4_time = np.log(np.array(RK4_time))
+    
+    euler_fit = np.polyfit(log_time,log_euler_time,1)
+    verlet_fit = np.polyfit(log_time,log_verlet_time,1)
+    RK4_fit = np.polyfit(log_time,log_RK4_time,1)
+    
+    
+    
+    euler_A = np.exp(euler_fit[1])
+    verlet_A = np.exp(verlet_fit[1])
+    RK4_A = np.exp(RK4_fit[1])
+    
+    euler_alpha = euler_fit[0]
+    verlet_alpha = verlet_fit[0]
+    RK4_alpha = RK4_fit[0]
+    
+    euler_fit = log_time * euler_fit[0] + euler_fit[1]
+    verlet_fit = log_time * verlet_fit[0] + verlet_fit[1]
+    RK4_fit = log_time * RK4_fit[0] + RK4_fit[1]
+    
+    plt.title("Computation time chart for Euler,Verlet and RK4 for dt values with sim time of 365 days\n",fontsize=10)    
+    plt.legend(loc='upper right',fontsize=7)
+    plt.xlabel("dt (s)")
+    plt.ylabel("Computation time (s)")
+    plt.savefig('CompTimes.png', dpi=400, bbox_inches = "tight")
+    plt.show()
+    plt.plot(log_time,log_euler_time,label="Euler")
+    plt.plot(log_time,log_verlet_time,label="Verlet")
+    plt.plot(log_time,log_RK4_time,label="RK4")
+    plt.plot(log_time, euler_fit, linestyle='dashed',label="Euler power law fit t= " + str(round(euler_A,3)) + "dt^(" + str(round(euler_alpha,4)) + ")")
+    plt.plot(log_time, verlet_fit, linestyle='dashed',label="Verlet power law fit t= " + str(round(verlet_A,3)) + "dt^(" + str(round(verlet_alpha,4)) + ")")
+    plt.plot(log_time, RK4_fit, linestyle='dashed',label="RK4 power law fit t= " + str(round(RK4_A,2)) + "dt^(" + str(round(RK4_alpha,2)) + ")")
+    plt.title("log(computation time) chart for Euler,Verlet and RK4 for log(dt) values with sim time of 365 days\n",fontsize=10)
+    plt.legend(loc='upper right',fontsize=6)
+    plt.xlabel("log(dt)")
+    plt.ylabel("log(computation time)")
+    plt.savefig('CompTimesLog.png', dpi=400, bbox_inches = "tight")
+    plt.show()
+
+def run_simulation(tmax,selected_method,dt):
     t = 0
-    dt = int(dt_var.get())
-    selected_method = integration_method.get()
     if selected_method == "RK4":
         while t <= tmax:
             total_ke_temp = 0
@@ -92,8 +174,11 @@ def run_simulation(tmax):
             comArr_r.append(np.sqrt(centre_of_mass[0]**2 + centre_of_mass[1]**2 + centre_of_mass[2]**2))
             total_ke.append(total_ke_temp)
             total_gpe.append(total_gpe_temp)
+            
             t = t + dt
-                   
+
+
+                
 selected_planet_name = '(0, 0, 0)'
 focus = None
 def refocus(selected_planet_name):
@@ -125,9 +210,18 @@ def create_plot(ax, zoom, replot,selected_planet=None):
                 ax.scatter(planet.xpos, planet.ypos, planet.zpos, c='red', s=100)
             else:
                 ax.scatter(planet.xpos, planet.ypos, planet.zpos)
-    ax.plot3D(comArrx, comArry, comArrz,label="Centre of mass")
-    ax.scatter(comArrx[-1], comArry[-1], comArrz[-1],label="Centre of mass")
-    ax.legend()
+    #ax.plot3D(comArrx, comArry, comArrz,label="Centre of mass")
+    #ax.scatter(comArrx[-1], comArry[-1], comArrz[-1],label="Centre of mass")
+    ax.set_xlabel('\nx(m)')     
+    ax.yaxis.set_label_text('\ny(m) ')
+    ax.zaxis.set_label_text(' z(m) ')
+    ax.set_title("Orbit plot of solar system: dt="+str(dt_var.get())+",t="+str(tmax_var.get())+" Days"+ " : "+str(integration_method.get()) + "\n\n",fontsize=10)
+    legend = ax.legend(bbox_to_anchor=(1.05, 1.05), loc='upper left',fontsize=7)
+    frame = legend.get_frame() 
+    frame.set_linewidth(0.4)
+    frame.set_alpha(1)
+    frame.set_boxstyle('round,pad=0.1')
+    plt.subplots_adjust(right=0.65)
     canvas.draw()
     
         
@@ -160,31 +254,92 @@ def rotate_plot_vertical(event):
     ax.view_init(elev=angle, azim=ax.azim)
     canvas.draw()
 
+def save_plot():
+    dt = str(dt_var.get())
+    t = str(tmax_var.get())
+    method = str(integration_method.get())
+    fig.savefig(str(method) + '-DT='+str(dt)+'-T='+str(t)+'-.png', dpi=300, bbox_inches='tight')
+
 def on_submit():
+    global comArrx
+    global comArry
+    global comArrz
+    global total_ke
+    global total_gpe
+    global comArr_r
+    
     tmax = int(tmax_var.get()) * 24 * 60 * 60
     selected_planet = planet_var.get()
     for planet in planet_array:
         planet.orbitx = []
         planet.orbity = []
         planet.orbitz = []
-        for planet in planet_array:
-            planet.orbitx.append(planet.xpos)
-            planet.orbity.append(planet.ypos)
-            planet.orbitz.append(planet.zpos)
-    run_simulation(tmax)
+        planet.vel_arr = []
+        planet.planets = []
+        planet.ke = []
+        planet.gpe = []
+        planet.potential = []
+        planet.xvel = planet.initial_xvel
+        planet.yvel = planet.initial_yvel
+        planet.zvel = planet.initial_zvel
+        planet.xpos = planet.initial_xpos
+        planet.ypos = planet.initial_ypos
+        planet.zpos = planet.initial_zpos
+        
+    t = 0
+    total_ke = []
+    total_gpe = []
+    comArrx = []
+    comArry = []
+    comArrz = []
+    comArr_r = []
     
+    start = time.time()
+    run_simulation(tmax,integration_method.get(),int(dt_var.get()))
+    end = time.time()
+    print("time taken was: " + str(end - start))
     create_plot(ax, 1e11,True, selected_planet)
     plt.plot(np.arange(0,len(total_ke)), total_ke)
     plt.plot(np.arange(0,len(total_gpe)), total_gpe)
     totale = np.array(total_gpe) + np.array(total_ke)
     plt.plot(np.arange(0,len(total_gpe)), totale)
-    plt.show()      
-    plt.plot(np.arange(len(comArr_r)),comArr_r,label="centre of mass pos")
-    plt.title("Centre of mass plot for " + integration_method.get() + " method")
+    plt.show()
+    plt.plot(np.linspace(0,len(comArr_r)-1,len(comArr_r))*(int(dt_var.get())/60/60)/24,comArr_r,label="CoM pos")
+    plt.title("Centre of mass ΔR for " + integration_method.get() + " method,dt="+dt_var.get()+"s,t=" + tmax_var.get() + "Days \n")
+    plt.xlabel("Days")
+    plt.ylabel("ΔR of CoM (metres)")
+    plt.savefig('CoM-'+ integration_method.get()+"-dt="+dt_var.get()+'-t='+tmax_var.get()+'.png', dpi=300, bbox_inches = "tight")
     plt.show() 
-    ef.error_from_exact(planet_array,dt)
+    print("Centre of Mass")
+    print(comArr_r[-1])
+    
+    plt.plot(np.linspace(0,len(total_gpe)-1,len(total_gpe))*(int(dt_var.get())/60/60)/24,total_gpe,label="GPE")
+    plt.plot(np.linspace(0,len(total_ke)-1,len(total_ke))*(int(dt_var.get())/60/60)/24,total_ke,label="Kinetic energy")
+    totale = np.array(total_gpe)+np.array(total_ke)
+    plt.plot(np.linspace(0,len(totale)-1,len(totale))*(int(dt_var.get())/60/60)/24,totale,label="Total energy")
+    totale = np.array(total_gpe)+np.array(total_ke)
+    plt.title("System energy plot: dt=" + dt_var.get() + "s" + ", t=" + tmax_var.get() + " Days : "  + integration_method.get() + "\n",fontsize=11)    
+    plt.legend(loc='upper right',fontsize=6)
+    plt.xlabel("Days")
+    plt.ylabel("E (Joules)")
+    plt.savefig('Energy-Plot-'+ integration_method.get()+"-dt="+dt_var.get()+'.png', dpi=300, bbox_inches = "tight")
+    print("Start energy joules: " + str(totale[0]))
+    print("End energy joules: " + str(totale[-1]))
+    print("Energy percentage at end, of initial energy: " + str(totale[-1]/totale[0] * 100) + "%")
+    plt.show()
+    
+    
+    
+    ef.earth_halley_distance(planet_array,int(dt_var.get()) ,integration_method.get())
+    ef.error_from_exact_xpos_mercury(planet_array,integration_method.get(),int(dt_var.get()))
+    ef.difference_orbitradius("Earth",planet_array,integration_method.get(),int(dt_var.get()))
+    ef.difference_orbitradius("Mercury",planet_array,integration_method.get(),int(dt_var.get()))
+    ef.error_from_exact_xpos(planet_array,integration_method.get(),int(dt_var.get()))
+    
 
     
+    
+
 root = tk.Tk()
 root.title("Solar System Simulation")
 planet_var = tk.StringVar()
@@ -223,6 +378,10 @@ focus_object_combobox.current(len(planet_array))  # set initial selection to '(0
 focus_object_combobox.grid(row=4, column=1, padx=5, pady=5)
 fig = plt.figure(dpi=100)
 ax = plt.axes(projection='3d')
+save_button = ttk.Button(frame, text="Save Plot", command=save_plot)
+save_button.grid(row=5, column=0, pady=10)  # Adjust grid position as needed
+time_plot_btn = ttk.Button(frame, text="Compute Time Plots", command=time_plots)
+time_plot_btn.grid(row=7, column=0, pady=10)
 canvas = FigureCanvasTkAgg(fig, master=root)
 canvas.get_tk_widget().grid(row=1, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
 horizontal_rotation_scale = ttk.Scale(root, from_=0, to=100, orient=tk.HORIZONTAL, command=rotate_plot_horizontal)
@@ -232,3 +391,17 @@ vertical_rotation_scale.grid(row=3, column=0, sticky=(tk.W, tk.E))
 zoom_scale = ttk.Scale(frame, from_=9, to=13, orient=tk.HORIZONTAL, command=update_zoom)
 zoom_scale.grid(row=1, column=1, padx=5, pady=5, sticky=tk.W)
 root.mainloop()
+
+
+
+
+
+    
+
+
+
+
+
+
+
+
