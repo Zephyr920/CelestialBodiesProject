@@ -1,13 +1,7 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Tue May  2 12:57:58 2023
-
-@author: Agustin
-"""
 import numpy as np
 import matplotlib.pyplot as plt
 import csv
-from tkinter import *
     
 # Open the file in 'r' mode, not 'rb'
 csv_file = open('horizons_results_earth.csv','r')
@@ -49,13 +43,3 @@ def error_from_exact(planet_array,dt):
     plt.plot(np.linspace(0,8768,len(earth.orbitx)),earth.orbitx)
     plt.plot(earth_xtraj)
     plt.show()
-
-def simulation(root):
-    matplotlib_or_pygame = Label(root, text = "Would you like to see the simulation through matplotlib or Pygame?")
-
-    matplotlib_pyplot = Button(root, text = "Matplotlib.pyplot")
-    pygame = Button(root, text = "PyGame")
-
-    matplotlib_or_pygame.pack()
-    matplotlib_pyplot.pack()
-    pygame.pack()

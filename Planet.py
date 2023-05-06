@@ -11,7 +11,7 @@ class Planet:
     AU = 149597871000
     G = 6.6743e-11
     DT = 3600
-    SCALE = 150 / AU
+    SCALE = 100 / AU
     
     def __init__(self, xpos, ypos, zpos, xvel, yvel, zvel, mass, name, colour, vis_r):
         

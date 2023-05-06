@@ -3,8 +3,6 @@ import pygame
 import Planet as p
 import PlanetsData as psd
 
-#data_list, xpos, ypos, xvel, yvel, mass, radius = psd.load_data('PlanetData.csv')
-
 pygame.init()
 
 WIDTH, HEIGHT = 800, 800
