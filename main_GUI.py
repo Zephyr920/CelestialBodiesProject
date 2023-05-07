@@ -30,7 +30,7 @@ with open('planet_data.csv',encoding='utf-8-sig',newline='') as csvfile:
     index = 0 # index for the name list
     for row in reader:    
         mass, xpos, ypos, zpos, xvel, yvel, zvel = map(float, row)
-        planet_array.append(p.Planet(xpos * 1e3, ypos * 1e3, zpos * 1e3, xvel * 1e3, yvel * 1e3, zvel * 1e3,mass,namelist[index])) #numbers from JPL Horizons are in km , 1e3 turns it into metres
+        planet_array.append(p.Planet(xpos * 1e3, ypos * 1e3, zpos * 1e3, xvel * 1e3, yvel * 1e3, zvel * 1e3,mass,namelist[index],'',0)) #numbers from JPL Horizons are in km , 1e3 turns it into metres
         index = index + 1 
 
 

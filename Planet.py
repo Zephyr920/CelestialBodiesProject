@@ -69,9 +69,9 @@ class Planet:
             if planet != planets[i]:  
                 otherPlanet = planets[i] # gets acceleration on the selected planet from all the other planets hence it loops through all others with a planet != planets[i] check
     
-                dx = self.xpos - otherPlanet.xpos # calculates the difference in x,y,z coords from the other planet to then carry out newtons law of gravitation calculations
-                dy = self.ypos - otherPlanet.ypos
-                dz = self.zpos - otherPlanet.zpos
+                dx = xpos - otherPlanet.xpos # calculates the difference in x,y,z coords from the other planet to then carry out newtons law of gravitation calculations
+                dy = ypos - otherPlanet.ypos
+                dz = zpos - otherPlanet.zpos
                 dist = np.sqrt(dx**2 + dy**2 + dz**2) # calculates distance from the dx,dy,dz variables
     
                 f = G * otherPlanet.mass * self.mass / dist**2 # newtons law of gravitation
