@@ -7,33 +7,27 @@ Physics 305 Project Repository
 
 Welcome to our Celestial Bodies Project, a computational physics project built in Python aimed at simulating the movement of 
 planets and other objects in our solar system , using a suitable numerical integration techniques.The simulator is designed to set up the solar system, simulate the movement 
-of planets, and aims to investigate the varying numerical integraion techniques and how they affect the dynamics and physical accuracy of our model.
+of planets, and aims to investigate the varying numerical integration techniques and how they affect the dynamics and physical accuracy of our model.
 The goal of the project is to analyze the results and draw conclusions about the dynamics of space objects, and the error and accuracy of
 our simulation.
 
-![image](https://user-images.githubusercontent.com/82035685/233155003-1b39c9bc-3afe-478c-aaa3-56baccf7d59a.png)
 
 # Aims
 
 -Set up the solar system and simulate the movement of planets  
--Simulate the path of the James Webb Space Telescope  
 -Analyze the results and draw conclusions about the dynamics of space objects and the physical quantities that can be investigated.
 
 # Code
 
 The program uses Python and modules such as numpy and matplotlib. Data on the celestial objects is stored in a .csv file
 and passed through to the main program which reads them in and instantiates the corresponding objects of class planet with the 
-desired attributes. The planet class also contains many functions for the simulation. The planet class is where the functions for
-the Verlet integration method are present. The main code uses the planet class
-to simulate the system and plot the graphics for a visual representation of the simulation.
-
-# Installation
-
-- Updated when finished
+desired attributes. The planet class also contains many functions for the simulation.
 
 # Usage
 
-- Updated when finished
+- Download as a zip, load main.py or main_GUI in (main.py for Live simulation and main_GUI.py for orbit plots)
+
+-For main_GUI enter a max time in days, a time step in seconds and choose an integration method (Euler, Verlet and RK4) and submit. It may take a while to finish but after the auxiliary plots appear in the console it has finished. Then the zoom and rotation scales can be used to move around and the refocus utility to change the plots focus.
 
 # References
 
@@ -43,4 +37,4 @@ https://gereshes.com/2018/07/09/verlet-integration-the-n-body-problem/ - Compare
 
 # Acknowledgments
 
-The Celestial Bodies Project was created by a team consisting of Alex Stancioiu, Hubert Radecki, Michael Ravenscroft, Oliver Rubia Alcarria and Agustin Montemurro.
+The Celestial Bodies Project was created by Alex Stancioiu and Agustin Montemurro.
